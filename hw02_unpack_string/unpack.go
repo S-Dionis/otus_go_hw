@@ -11,18 +11,18 @@ import (
 var ErrInvalidString = errors.New("invalid string")
 
 func Unpack(str string) (string, error) {
-	var result strings.Builder
-	multiple, numbersInRow := 1, 0
-
 	if len(str) == 0 {
 		return "", nil
 	}
+
+	var result strings.Builder
+	multiple, numbersInRow := 1, 0
 
 	if unicode.IsDigit(rune(str[0])) {
 		return "", ErrInvalidString
 	}
 	for _, char := range reverse.String(str) {
-		if char >= '0' && char <= '9' {
+		if unicode.IsDigit(char) {
 			multiple = int(char - '0')
 			numbersInRow++
 		} else {

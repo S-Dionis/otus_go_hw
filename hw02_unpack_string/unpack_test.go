@@ -43,3 +43,28 @@ func TestUnpackInvalidString(t *testing.T) {
 		})
 	}
 }
+
+func TestUnpackInvalidChar(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+		isError  bool
+	}{
+		{name: "success test", input: "okay", expected: "okay", isError: false},
+		{name: "fail test", input: "1okay", expected: "", isError: true},
+	}
+
+	for _, tc := range tests {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := Unpack(tc.input)
+			if tc.isError {
+				require.Truef(t, errors.Is(err, ErrInvalidString), "actual error %q", err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tc.expected, result)
+			}
+		})
+	}
+}
