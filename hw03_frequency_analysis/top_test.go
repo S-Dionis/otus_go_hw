@@ -82,7 +82,6 @@ func TestTop10(t *testing.T) {
 }
 
 func TestWithPunctuationMarks(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		what     string
@@ -107,5 +106,4 @@ func TestWithPunctuationMarks(t *testing.T) {
 			require.Equal(t, tc.expected, result)
 		})
 	}
-
 }
