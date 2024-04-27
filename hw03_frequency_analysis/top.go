@@ -27,13 +27,10 @@ func Top10(text string) []string {
 		}
 	}
 
-	kvs := make([]kv, len(cache))
-
-	i := 0
+	kvs := make([]kv, 0, len(cache))
 
 	for k, v := range cache {
-		kvs[i] = kv{k, v}
-		i++
+		kvs = append(kvs, kv{k, v})
 	}
 
 	sort.Slice(kvs, func(i, j int) bool {
@@ -49,5 +46,8 @@ func Top10(text string) []string {
 		results = append(results, kv.key)
 	}
 
+	if len(results) < 10 {
+		return results
+	}
 	return results[:10]
 }
