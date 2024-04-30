@@ -1,4 +1,4 @@
-module github.com/fixme_my_friend/hw02_unpack_string
+module github.com/S-Dionis/otus_go_hw/hw02_unpack_string
 
 go 1.19
 
@@ -8,4 +8,5 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	golang.org/x/example/hello v0.0.0-20240205180059-32022caedd6a
 )
