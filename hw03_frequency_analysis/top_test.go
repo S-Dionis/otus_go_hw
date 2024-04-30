@@ -80,3 +80,30 @@ func TestTop10(t *testing.T) {
 		}
 	})
 }
+
+func TestWithPunctuationMarks(t *testing.T) {
+	tests := []struct {
+		name     string
+		what     string
+		expected []string
+	}{
+		{
+			name:     "with comma check",
+			what:     "a, a a, a, a",
+			expected: []string{"a,", "a"},
+		},
+		{
+			name:     "punctuation check",
+			what:     "a, - a - a, - a, - a",
+			expected: []string{"-", "a,", "a"},
+		},
+	}
+
+	for _, tc := range tests {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			result := Top10(tc.what)
+			require.Equal(t, tc.expected, result)
+		})
+	}
+}
