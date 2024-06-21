@@ -7,7 +7,7 @@ import (
 )
 
 func TestList(t *testing.T) {
-	t.Run("empty list", func(t *testing.T) {
+	t.Run("empty List", func(t *testing.T) {
 		l := NewList()
 
 		require.Equal(t, 0, l.Len())
@@ -47,5 +47,49 @@ func TestList(t *testing.T) {
 			elems = append(elems, i.Value.(int))
 		}
 		require.Equal(t, []int{70, 80, 60, 40, 10, 30, 50}, elems)
+	})
+
+	t.Run("remove test", func(t *testing.T) {
+		l := NewList()
+		a := l.PushFront("a")
+		b := l.PushBack("b")
+		c := l.PushBack("c")
+
+		l.Remove(a)
+		l.Remove(b)
+
+		front := l.Front()
+		back := l.Back()
+
+		require.Equal(t, c, front)
+		require.Equal(t, c, back)
+	})
+
+	t.Run("remove back test", func(t *testing.T) {
+		l := NewList()
+		a := l.PushFront("a")
+		l.PushBack("b")
+
+		l.Remove(l.Back())
+
+		front := l.Front()
+		back := l.Back()
+
+		require.Equal(t, a, front)
+		require.Equal(t, a, back)
+	})
+
+	t.Run("remove front test", func(t *testing.T) {
+		l := NewList()
+		l.PushFront("a")
+		b := l.PushBack("b")
+
+		l.Remove(l.Front())
+
+		front := l.Front()
+		back := l.Back()
+
+		require.Equal(t, b, front)
+		require.Equal(t, b, back)
 	})
 }
