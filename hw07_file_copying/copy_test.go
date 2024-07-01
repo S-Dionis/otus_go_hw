@@ -1,10 +1,9 @@
 package main
 
 import (
-	"errors"
+	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -24,52 +23,59 @@ func logErr(err error) {
 }
 
 func TestCopy(t *testing.T) {
-	path := "testdata/testFile.txt"
+	fromPath := "testdata/input.txt"
+	toPath := "testdata/testFile.txt"
+
+	t.Run("Errors on copying", func(t *testing.T) {
+		err := Copy(fromPath, toPath, -1, 10000)
+		require.ErrorIs(t, err, ErrWrongOffsetValue, "actual err - %v", err)
+		err = Copy(fromPath, toPath, 0, -1)
+		require.ErrorIs(t, err, ErrWrongLimitValue, "actual err - %v", err)
+	})
+
+	t.Run("Errors on pass the same file", func(t *testing.T) {
+		err := Copy(fromPath, fromPath, 0, 0)
+		require.ErrorIs(t, err, ErrUnsupportedFile, "actual err - %v", err)
+	})
 
 	t.Run("Tasks without errors", func(t *testing.T) {
-		err := Copy("testdata/input.txt", path, 0, 0)
+		err := Copy(fromPath, toPath, 0, 0)
 		require.NoError(t, err)
-		inputFile, err := os.Open("testdata/input.txt")
+		inputFile, err := os.Open(fromPath)
 		require.NoError(t, err)
 		logErr(err)
 
-		testFile, _ := os.Open(path)
-		inputFileStat, _ := inputFile.Stat()
-		testFileStat, _ := testFile.Stat()
+		testFile, err := os.Open(toPath)
+		require.NoError(t, err)
+		inputFileStat, err := inputFile.Stat()
+		require.NoError(t, err)
+		testFileStat, err := testFile.Stat()
+		require.NoError(t, err)
 		expectedSize := inputFileStat.Size()
 		actualSize := testFileStat.Size()
 
 		ActionWithLogError(func() error { return inputFile.Close() })
 		ActionWithLogError(func() error { return testFile.Close() })
-		ActionWithLogError(func() error { return os.Remove(path) })
+		ActionWithLogError(func() error { return os.Remove(toPath) })
 
 		require.Truef(t, expectedSize == actualSize, "Equality of file size")
 	})
 
-	t.Run("Errors on copying", func(t *testing.T) {
-		err := Copy("testdata/input.txt", "./testFile", -1, 10000)
-		require.Truef(t, errors.Is(err, ErrWrongOffsetValue), "actual err - %v", err)
-		err = Copy("testdata/input.txt", "./testFile", 0, -1)
-		require.Truef(t, errors.Is(err, ErrWrongLimitValue), "actual err - %v", err)
-	})
-
 	t.Run("Offset and limit test", func(t *testing.T) {
-		err := Copy("testdata/input.txt", path, 1000, 100)
+		err := Copy(fromPath, toPath, 1000, 100)
 		require.NoError(t, err)
 
 		// dd if=input.txt of=output_1000_100.txt bs=1 skip=1000 count=100
-		expected, _ := os.ReadFile("testdata/output_1000_100.txt")
-		file, _ := os.ReadFile("testdata/testFile.txt")
-		content := string(file)
+		expected, err := os.ReadFile("testdata/output_1000_100.txt")
+		require.NoError(t, err)
+		file, err := os.ReadFile(toPath)
+		require.NoError(t, err)
+		actualContent := string(file)
 		expectedContent := string(expected)
 
-		compare := strings.Compare(content, expectedContent)
-		require.Truef(t, compare == 0, "File content as expected")
+		assert.Equal(t, expectedContent, actualContent)
 
-		err = os.Remove(path)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		err = os.Remove(toPath)
+		require.NoError(t, err)
 	})
 }

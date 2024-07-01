@@ -2,10 +2,10 @@ package main
 
 import (
 	"errors"
+	"fmt"
+	"github.com/cheggaaa/pb/v3"
 	"io"
 	"os"
-
-	"github.com/cheggaaa/pb/v3"
 )
 
 var (
@@ -18,8 +18,25 @@ var (
 
 var closeFile = func(file *os.File) {
 	if err := file.Close(); err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
+}
+
+func isSameFile(fromPath, toPath string) (bool, error) {
+
+	toPathStat, err := os.Stat(toPath)
+	if os.IsNotExist(err) {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+
+	fromPathStat, err := os.Stat(fromPath)
+	if err != nil {
+		return false, err
+	}
+
+	return os.SameFile(fromPathStat, toPathStat), nil
 }
 
 func Copy(fromPath, toPath string, offset, limit int64) error {
@@ -31,6 +48,15 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 		return ErrWrongLimitValue
 	}
 
+	sameFile, err := isSameFile(fromPath, toPath)
+	if err != nil {
+		return err
+	}
+
+	if sameFile == true {
+		return ErrUnsupportedFile
+	}
+
 	file, err := os.Open(fromPath)
 	defer closeFile(file)
 
@@ -38,12 +64,13 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 		if os.IsNotExist(err) {
 			return ErrFileNotExists
 		}
-
 		return ErrUnsupportedFile
 	}
 
 	fileStat, err := file.Stat()
-	panicOnErr(err)
+	if err != nil {
+		return err
+	}
 
 	if fileStat.Size() < offset {
 		return ErrOffsetExceedsFileSize
@@ -54,12 +81,16 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 	}
 
 	to, err := os.Create(toPath)
-	panicOnErr(err)
+	if err != nil {
+		return err
+	}
 
 	defer closeFile(to)
 
 	err = copyFromTo(file, to, offset, limit)
-	panicOnErr(err)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -97,7 +128,10 @@ func copyFromTo(from *os.File, to *os.File, offset, limit int64) error {
 			break
 		}
 
-		writeOrPanic(to, buff[:n])
+		_, err = to.Write(buff[:n])
+		if err != nil {
+			return err
+		}
 		bar.Increment()
 	}
 
@@ -107,22 +141,14 @@ func copyFromTo(from *os.File, to *os.File, offset, limit int64) error {
 		if err != nil {
 			return err
 		}
-		writeOrPanic(to, buff[:n])
+		_, err = to.Write(buff[:n])
+		if err != nil {
+			return err
+		}
 		bar.Increment()
 	}
 
 	bar.Finish()
 
 	return nil
-}
-
-func writeOrPanic(to *os.File, buff []byte) {
-	_, err := to.Write(buff)
-	panicOnErr(err)
-}
-
-func panicOnErr(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
