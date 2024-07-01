@@ -1,0 +1,2 @@
+reeBSD 10.3 or later	amd64, 386	Debian GNU/kFreeBSD not supported
+Linux 2.6.23 or later with glibc	
