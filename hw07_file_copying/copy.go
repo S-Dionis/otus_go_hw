@@ -3,9 +3,10 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/cheggaaa/pb/v3"
 	"io"
 	"os"
+
+	"github.com/cheggaaa/pb/v3"
 )
 
 var (
@@ -23,7 +24,6 @@ var closeFile = func(file *os.File) {
 }
 
 func isSameFile(fromPath, toPath string) (bool, error) {
-
 	toPathStat, err := os.Stat(toPath)
 	if os.IsNotExist(err) {
 		return false, nil
@@ -53,7 +53,7 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 		return err
 	}
 
-	if sameFile == true {
+	if sameFile {
 		return ErrUnsupportedFile
 	}
 
@@ -124,7 +124,7 @@ func copyFromTo(from *os.File, to *os.File, offset, limit int64) error {
 			return err
 		}
 
-		if n == 0 || err == io.EOF {
+		if n == 0 || errors.Is(err, io.EOF) {
 			break
 		}
 

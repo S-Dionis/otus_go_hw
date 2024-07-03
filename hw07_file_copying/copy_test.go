@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -62,16 +62,17 @@ func TestCopy(t *testing.T) {
 	})
 
 	t.Run("Offset and limit test", func(t *testing.T) {
-		err := Copy(fromPath, toPath, 1000, 100)
+		fromPath := "testdata/test_ouptut"
+		toPath := "testdata/test_output_2_2.txt"
+		err := Copy(fromPath, toPath, 2, 2)
 		require.NoError(t, err)
 
-		// dd if=input.txt of=output_1000_100.txt bs=1 skip=1000 count=100
-		expected, err := os.ReadFile("testdata/output_1000_100.txt")
+		expected := "23"
 		require.NoError(t, err)
 		file, err := os.ReadFile(toPath)
 		require.NoError(t, err)
 		actualContent := string(file)
-		expectedContent := string(expected)
+		expectedContent := expected
 
 		assert.Equal(t, expectedContent, actualContent)
 
