@@ -16,12 +16,6 @@ func ActionWithLogError(fn func() error) {
 	}
 }
 
-func logErr(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func TestCopy(t *testing.T) {
 	fromPath := "testdata/input.txt"
 	toPath := "testdata/testFile.txt"
