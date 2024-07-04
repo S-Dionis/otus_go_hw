@@ -43,7 +43,6 @@ func TestCopy(t *testing.T) {
 		require.NoError(t, err)
 		inputFile, err := os.Open(fromPath)
 		require.NoError(t, err)
-		logErr(err)
 
 		testFile, err := os.Open(toPath)
 		require.NoError(t, err)
@@ -57,8 +56,7 @@ func TestCopy(t *testing.T) {
 		ActionWithLogError(func() error { return inputFile.Close() })
 		ActionWithLogError(func() error { return testFile.Close() })
 		ActionWithLogError(func() error { return os.Remove(toPath) })
-
-		require.Truef(t, expectedSize == actualSize, "Equality of file size")
+		assert.Equal(t, expectedSize, actualSize, "Equality of file size")
 	})
 
 	t.Run("Offset and limit test", func(t *testing.T) {
