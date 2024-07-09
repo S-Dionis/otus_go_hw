@@ -9,8 +9,8 @@ import (
 
 // RunCmd runs a command + arguments (cmd) with environment variables from env.
 func RunCmd(cmd []string, env Environment) (returnCode int) {
-	cmdName := cmd[2]
-	cmdArgs := cmd[3:]
+	cmdName := cmd[0]
+	cmdArgs := cmd[1:]
 
 	for k, v := range env {
 		if v.NeedRemove {

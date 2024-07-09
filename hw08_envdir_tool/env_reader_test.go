@@ -13,12 +13,11 @@ func TestReadDir(t *testing.T) {
 		os.Setenv("EMPTY", "")
 
 		expected := Environment{
-			"BAR":     {"bar", false},
-			"EMPTY":   {"", false},
-			"FOO":     {"   foo\nwith new line", false},
-			"HELLO":   {"\"hello\"", false},
-			"MURMEOW": {"without equals sign", false},
-			"UNSET":   {"", true},
+			"BAR":   {"bar", false},
+			"EMPTY": {"", false},
+			"FOO":   {"   foo\nwith new line", false},
+			"HELLO": {"\"hello\"", false},
+			"UNSET": {"", true},
 		}
 
 		env, err := ReadDir("./testdata/env")

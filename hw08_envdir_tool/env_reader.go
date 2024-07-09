@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -40,8 +42,17 @@ func ReadDir(dir string) (Environment, error) {
 		}
 
 		fileName := file.Name()
-		filePath := filepath.Join(dir, fileName)
-		line, err := readFirstLine(filePath)
+		if strings.Contains(fileName, "=") {
+			continue
+		}
+
+		info, err := file.Info()
+
+		if err != nil {
+			return nil, ErrFileRead
+		}
+
+		line, err := readFirstLine(dir, info)
 
 		if errors.Is(err, ErrFileIsEmpty) {
 			remove = true
@@ -50,7 +61,6 @@ func ReadDir(dir string) (Environment, error) {
 		}
 
 		value := replaceNullWithNewlineBytes(strings.TrimRight(line, " \t\r"))
-		fileName = strings.ReplaceAll(fileName, "=", "")
 
 		envs[fileName] = EnvValue{
 			value, remove,
@@ -60,17 +70,35 @@ func ReadDir(dir string) (Environment, error) {
 	return envs, nil
 }
 
-func readFirstLine(path string) (string, error) {
-	content, err := os.ReadFile(path)
-	if err != nil {
-		return "", err
-	}
+func readFirstLine(dir string, fileInfo os.FileInfo) (string, error) {
 
-	if len(content) == 0 {
+	if fileInfo.Size() == 0 {
 		return "", ErrFileIsEmpty
 	}
 
-	return strings.Split(string(content), "\n")[0], nil
+	filePath := filepath.Join(dir, fileInfo.Name())
+
+	file, err := os.Open(filePath)
+
+	// Доступен ли на чтение
+	if err != nil {
+		return "", err
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Println("Error closing file:", err)
+		}
+	}(file)
+
+	scanner := bufio.NewScanner(file)
+
+	if !scanner.Scan() {
+		return "", scanner.Err()
+	}
+
+	return scanner.Text(), nil
+
 }
 
 func replaceNullWithNewlineBytes(b string) string {

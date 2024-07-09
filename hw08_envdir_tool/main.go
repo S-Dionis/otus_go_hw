@@ -12,9 +12,9 @@ func main() {
 	envDir := os.Args[1]
 	envs, err := ReadDir(envDir)
 	if err != nil {
-		panic(err) // TODO replace with log maybe?
+		log.Fatalf("Error reading dir %s: %s", envDir, err)
 	}
 
-	code := RunCmd(os.Args, envs)
+	code := RunCmd(os.Args[2:], envs)
 	os.Exit(code)
 }

@@ -15,7 +15,7 @@ func TestRunCmd(t *testing.T) {
 			"UNSET": {"", true},
 		}
 
-		args := []string{"", "exit 0", ""}
+		args := []string{"exit 0", ""}
 
 		_ = RunCmd(args, environment)
 		assert.Equal(t, "bar", os.Getenv("BAR"))
@@ -25,7 +25,7 @@ func TestRunCmd(t *testing.T) {
 	t.Run("correct read of ", func(t *testing.T) {
 		environment := Environment{}
 
-		args := []string{"", "exit 1", ""}
+		args := []string{"exit 1", ""}
 
 		code := RunCmd(args, environment)
 		assert.Equal(t, 1, code)
