@@ -47,7 +47,6 @@ func ReadDir(dir string) (Environment, error) {
 		}
 
 		info, err := file.Info()
-
 		if err != nil {
 			return nil, ErrFileRead
 		}
@@ -71,7 +70,6 @@ func ReadDir(dir string) (Environment, error) {
 }
 
 func readFirstLine(dir string, fileInfo os.FileInfo) (string, error) {
-
 	if fileInfo.Size() == 0 {
 		return "", ErrFileIsEmpty
 	}
@@ -79,7 +77,6 @@ func readFirstLine(dir string, fileInfo os.FileInfo) (string, error) {
 	filePath := filepath.Join(dir, fileInfo.Name())
 
 	file, err := os.Open(filePath)
-
 	// Доступен ли на чтение
 	if err != nil {
 		return "", err
@@ -98,7 +95,6 @@ func readFirstLine(dir string, fileInfo os.FileInfo) (string, error) {
 	}
 
 	return scanner.Text(), nil
-
 }
 
 func replaceNullWithNewlineBytes(b string) string {
