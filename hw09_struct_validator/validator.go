@@ -63,36 +63,13 @@ func Validate(v interface{}) error {
 			param := parts[1]
 
 			switch fieldValue.Kind() {
-			case reflect.Int:
-				err := validateInt(int(fieldValue.Int()), rule, param)
-				if err != nil {
+			case reflect.Int, reflect.String:
+				if err := validatePrimitives(fieldValue, rule, param); err != nil {
 					validationErrors = append(validationErrors, ValidationError{Field: field.Name, Err: err})
 				}
 			case reflect.Slice, reflect.Array:
-				if fieldValue.Len() > 0 {
-					switch fieldValue.Index(0).Kind() {
-					case reflect.Int:
-						for j := 0; j < fieldValue.Len(); j++ {
-							err := validateInt(int(fieldValue.Index(j).Int()), rule, param)
-							if err != nil {
-								validationErrors = append(validationErrors, ValidationError{Field: field.Name, Err: err})
-							}
-						}
-					case reflect.String:
-						for j := 0; j < fieldValue.Len(); j++ {
-							err := validateString(fieldValue.Index(j).String(), rule, param)
-							if err != nil {
-								validationErrors = append(validationErrors, ValidationError{Field: field.Name, Err: err})
-							}
-						}
-					default:
-						return ErrorUnknownFieldType
-					}
-				}
-			case reflect.String:
-				err := validateString(fieldValue.String(), rule, param)
-				if err != nil {
-					validationErrors = append(validationErrors, ValidationError{Field: field.Name, Err: err})
+				if err := validateSlice(&validationErrors, fieldValue, rule, param, field.Name); err != nil {
+					return err
 				}
 			default:
 				return ErrorUnknownFieldType
@@ -103,6 +80,29 @@ func Validate(v interface{}) error {
 		return nil
 	}
 	return validationErrors
+}
+
+func validateSlice(validationErrors *ValidationErrors, fieldValue reflect.Value, rule, param, fieldName string) error {
+	if fieldValue.Len() > 0 {
+		for i := 0; i < fieldValue.Len(); i++ {
+			err := validatePrimitives(fieldValue.Index(i), rule, param)
+			if err != nil {
+				*validationErrors = append(*validationErrors, ValidationError{Field: fieldName, Err: err})
+			}
+		}
+	}
+	return nil
+}
+
+func validatePrimitives(fieldValue reflect.Value, rule, param string) error {
+	switch fieldValue.Kind() {
+	case reflect.Int:
+		return validateInt(int(fieldValue.Int()), rule, param)
+	case reflect.String:
+		return validateString(fieldValue.String(), rule, param)
+	default:
+		return ErrorUnknownFieldType
+	}
 }
 
 func errorFunc(value, rule string) error {
