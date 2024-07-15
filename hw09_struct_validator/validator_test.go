@@ -41,6 +41,10 @@ type (
 	TestCase struct {
 		Name float64 `validate:"in:20.0,11.1,333"`
 	}
+
+	PrivateField struct {
+		ignoreField []string `validate:"len:11"`
+	}
 )
 
 func TestValidate(t *testing.T) {
@@ -106,6 +110,11 @@ func TestValidate(t *testing.T) {
 				Name: 11.4,
 			},
 			ErrorUnknownFieldType,
+		}, {
+			PrivateField{
+				ignoreField: []string{"1", "2", "3"},
+			},
+			nil,
 		},
 	}
 
@@ -115,7 +124,6 @@ func TestValidate(t *testing.T) {
 			t.Parallel()
 			err := Validate(tt.in)
 			require.Equal(t, tt.expectedErr, err)
-			_ = tt
 		})
 	}
 }

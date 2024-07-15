@@ -30,11 +30,12 @@ type ValidationError struct {
 type ValidationErrors []ValidationError
 
 func (v ValidationErrors) Error() string {
-	var resultString string
+	var sb strings.Builder
+
 	for _, err := range v {
-		resultString += fmt.Sprintf("error in field: %v, %v\n", err.Field, err.Err)
+		sb.WriteString(fmt.Sprintf("error in field: %v, %v\n", err.Field, err.Err))
 	}
-	return resultString
+	return sb.String()
 }
 
 func Validate(v interface{}) error {
@@ -51,7 +52,7 @@ func Validate(v interface{}) error {
 
 		tag := field.Tag.Get("validate")
 
-		if tag == "" {
+		if tag == "" || !(field.PkgPath == "") {
 			continue
 		}
 
