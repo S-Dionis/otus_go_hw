@@ -52,7 +52,7 @@ func Validate(v interface{}) error {
 
 		tag := field.Tag.Get("validate")
 
-		if tag == "" || !(field.PkgPath == "") {
+		if tag == "" || !field.IsExported() {
 			continue
 		}
 
