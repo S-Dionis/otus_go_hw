@@ -21,21 +21,14 @@ func init() {
 func main() {
 	flag.Parse()
 
-	args := flag.Args()
-
 	if flag.NArg() < 2 {
 		fmt.Println("Usage: go run main.go [-timeout 1000]")
 	}
 
-	host := args[0]
-	port := args[1]
-
-	address := net.JoinHostPort(host, port)
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	client := NewTelnetClient(address, timeout, os.Stdin, os.Stdout)
+	client := NewTelnetClient(getAddress(), timeout, os.Stdin, os.Stdout)
 	defer client.Close()
 
 	connect(client)
@@ -69,4 +62,13 @@ func connect(client TelnetClient) {
 	if err := client.Connect(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func getAddress() string {
+	args := flag.Args()
+
+	host := args[0]
+	port := args[1]
+
+	return net.JoinHostPort(host, port)
 }
