@@ -53,7 +53,7 @@ func (t *TelnetClientImpl) Send() error {
 	for {
 		text, err := reader.ReadString('\n')
 		if err != nil {
-			if errors.Is(err, io.EOF) {
+			if !errors.Is(err, io.EOF) {
 				return err
 			}
 			return nil
@@ -71,7 +71,7 @@ func (t *TelnetClientImpl) Receive() error {
 	for {
 		text, err := reader.ReadString('\n')
 		if err != nil {
-			if errors.Is(err, io.EOF) {
+			if !errors.Is(err, io.EOF) {
 				return err
 			}
 			return nil
