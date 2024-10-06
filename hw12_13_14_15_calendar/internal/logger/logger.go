@@ -5,16 +5,10 @@ import (
 	"os"
 )
 
-type Logger struct {
-	level string
-}
-
 func InitLogger(level string) error {
-
 	var slogLevel slog.Level
-	var err = slogLevel.UnmarshalText([]byte(level))
-
-	if err == nil {
+	err := slogLevel.UnmarshalText([]byte(level))
+	if err != nil {
 		return err
 	}
 

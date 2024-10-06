@@ -17,7 +17,7 @@ func TestStorage(t *testing.T) {
 			DateTime:    time.Time{},
 			Duration:    0,
 			Description: "Test description",
-			OwnerId:     "owner id",
+			OwnerID:     "owner id",
 			NotifyTime:  0,
 		}
 
@@ -35,7 +35,7 @@ func TestStorage(t *testing.T) {
 			DateTime:    time.Time{},
 			Duration:    0,
 			Description: "Test description changed",
-			OwnerId:     "owner id",
+			OwnerID:     "owner id",
 			NotifyTime:  0,
 		}
 

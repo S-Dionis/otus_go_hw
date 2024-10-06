@@ -8,6 +8,6 @@ type Event struct {
 	DateTime    time.Time
 	Duration    time.Duration
 	Description string
-	OwnerId     string
+	OwnerID     string
 	NotifyTime  int64
 }

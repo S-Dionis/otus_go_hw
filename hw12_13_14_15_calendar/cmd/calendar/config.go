@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
 	"os"
+
+	"github.com/spf13/viper"
 )
 
 type Config struct {
 	Logger LoggerConf
 	Server ServerConf
-	DbType string
+	DBType string
 }
 
 type LoggerConf struct {
@@ -20,7 +21,7 @@ type ServerConf struct {
 	Port string `mapstructure:"port"`
 }
 
-type DbType struct {
+type DBType struct {
 	Type string `mapstructure:"db"`
 }
 

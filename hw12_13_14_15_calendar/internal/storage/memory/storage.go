@@ -2,15 +2,15 @@ package memorystorage
 
 import (
 	"errors"
+	"sync"
+
 	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/entities"
 	"github.com/google/uuid"
-	"sync"
 )
 
 type Storage struct {
-	mu           sync.RWMutex //nolint:unused
-	events       map[string]*entities.Event
-	lastInsertId string
+	mu     sync.RWMutex
+	events map[string]*entities.Event
 }
 
 func New() *Storage {
@@ -44,7 +44,7 @@ func (s *Storage) Change(event entities.Event) error {
 	e.DateTime = event.DateTime
 	e.Duration = event.Duration
 	e.Description = event.Description
-	e.OwnerId = event.OwnerId
+	e.OwnerID = event.OwnerID
 	e.NotifyTime = event.NotifyTime
 
 	return nil

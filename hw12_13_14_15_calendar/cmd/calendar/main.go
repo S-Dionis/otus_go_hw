@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	sqlstorage "github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/sql"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -15,6 +14,7 @@ import (
 	internalhttp "github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/server/http"
 	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage"
 	memorystorage "github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/memory"
+	sqlstorage "github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/sql"
 )
 
 var configFile string
@@ -39,7 +39,7 @@ func main() {
 
 	var storage storage.Storage
 
-	switch config.DbType {
+	switch config.DBType {
 	case "memory":
 		storage = memorystorage.New()
 	case "sql":

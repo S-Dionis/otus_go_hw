@@ -11,7 +11,7 @@ import (
 var logger *slog.Logger
 
 func init() {
-	file, err := os.OpenFile("method.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile("method.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o666)
 	if err != nil {
 		slog.Error("Не удалось открыть файл для логирования: %v", err)
 	}
@@ -23,16 +23,15 @@ func init() {
 	handler := slog.NewTextHandler(file, handlerOpts)
 	logger = slog.New(handler)
 
-	logFile, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	logFile, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o666)
 	if err != nil {
 		panic(err)
 	}
-	//defer logFile.Close()
 
 	logger = slog.New(slog.NewTextHandler(logFile, nil))
 }
 
-func loggingMiddleware(next http.Handler) http.Handler { //nolint:unused
+func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		next.ServeHTTP(w, r)

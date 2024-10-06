@@ -1,10 +1,11 @@
 package internalhttp
 
 import (
-	"github.com/stretchr/testify/require"
 	"io"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestHelloHandler(t *testing.T) {
