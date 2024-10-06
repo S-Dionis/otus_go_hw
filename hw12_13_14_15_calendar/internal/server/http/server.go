@@ -2,30 +2,58 @@ package internalhttp
 
 import (
 	"context"
+	"log/slog"
+	"net/http"
+	"time"
 )
 
-type Server struct { // TODO
+type Server struct {
+	app    Application
+	server *http.Server
 }
 
-type Logger interface { // TODO
-}
+type Application interface{}
 
-type Application interface { // TODO
-}
+func NewServer(app Application) *Server {
+	s := &Server{
+		app: app,
+	}
 
-func NewServer(logger Logger, app Application) *Server {
-	return &Server{}
+	mux := http.NewServeMux()
+	mux.HandleFunc("/hello", s.helloHandler)
+	server := &http.Server{
+		Addr:              ":8080",
+		Handler:           loggingMiddleware(mux),
+		ReadHeaderTimeout: 2 * time.Second,
+	}
+	s.server = server
+
+	return s
 }
 
 func (s *Server) Start(ctx context.Context) error {
-	// TODO
-	<-ctx.Done()
-	return nil
+	go func() {
+		<-ctx.Done()
+		if err := s.server.Shutdown(context.Background()); err != nil {
+			slog.Info("server" + time.Now().Format(time.RFC3339) + "Shutdown")
+			slog.Error("Server Shutdown Error:", err)
+		}
+	}()
+
+	slog.Info("server" + time.Now().Format(time.RFC3339) + "Start")
+	return s.server.ListenAndServe()
 }
 
 func (s *Server) Stop(ctx context.Context) error {
-	// TODO
+	err := s.server.Shutdown(ctx)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-// TODO
+func (s *Server) helloHandler(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Hello, World!"))
+}
