@@ -1,11 +1,12 @@
 package memorystorage
 
 import (
+	"testing"
+	"time"
+
 	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/entities"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
-	"time"
 )
 
 func TestStorage(t *testing.T) {
@@ -45,6 +46,5 @@ func TestStorage(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, listChanged, 1)
 		assert.Equal(t, eventChanged, listChanged[0])
-
 	})
 }
