@@ -30,7 +30,7 @@ func (s *Storage) Add(event *entities.Event) error {
 	return nil
 }
 
-func (s *Storage) Change(event entities.Event) error {
+func (s *Storage) Change(event *entities.Event) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -50,7 +50,7 @@ func (s *Storage) Change(event entities.Event) error {
 	return nil
 }
 
-func (s *Storage) Delete(event entities.Event) error {
+func (s *Storage) Delete(event *entities.Event) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 

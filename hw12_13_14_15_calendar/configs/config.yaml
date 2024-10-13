@@ -3,7 +3,10 @@ logger:
 
 server:
     host: localhost
-    port: 8080
+    port: 80
 
 db:
     memory
+
+grpc:
+    port: 8080

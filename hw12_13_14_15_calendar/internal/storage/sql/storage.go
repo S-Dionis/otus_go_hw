@@ -64,7 +64,7 @@ func (s *Storage) Add(event *entities.Event) error {
 	return nil
 }
 
-func (s *Storage) Change(event entities.Event) error {
+func (s *Storage) Change(event *entities.Event) error {
 	query := `update events
 				  set title = $1, date_time = $2, duration = $3, description = $4, OwnerID = $5, NotifyTime= $6
 				  where ID = $7`
@@ -82,7 +82,7 @@ func (s *Storage) Change(event entities.Event) error {
 	return nil
 }
 
-func (s *Storage) Delete(event entities.Event) error {
+func (s *Storage) Delete(event *entities.Event) error {
 	query := `DELETE FROM events WHERE events.ID = $1;`
 
 	result, err := s.db.ExecContext(s.ctx, query, event.ID)

@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"fmt"
@@ -8,9 +8,10 @@ import (
 )
 
 type Config struct {
-	Logger LoggerConf
-	Server ServerConf
-	DBType string
+	Logger   LoggerConf
+	Server   ServerConf
+	DBType   DBType
+	GRPCConf GRPCConf
 }
 
 type LoggerConf struct {
@@ -25,6 +26,10 @@ type DBType struct {
 	Type string `mapstructure:"db"`
 }
 
+type GRPCConf struct {
+	Port string `mapstructure:"port"`
+}
+
 func NewConfig(path string) Config {
 	viper.SetConfigFile(path)
 
@@ -36,6 +41,9 @@ func NewConfig(path string) Config {
 
 	var loggerConf LoggerConf
 	var serverConf ServerConf
+	var grpcConf GRPCConf
+	var dbConf DBType
+
 	err = viper.Sub("logger").Unmarshal(&loggerConf)
 	if err != nil {
 		fmt.Printf("Error unmarshalling config file, %s", err)
@@ -46,5 +54,16 @@ func NewConfig(path string) Config {
 		fmt.Printf("Error unmarshalling config file, %s", err)
 		os.Exit(1)
 	}
-	return Config{Logger: loggerConf, Server: serverConf}
+	err = viper.Sub("db").Unmarshal(&dbConf)
+	if err != nil {
+		fmt.Printf("Error unmarshalling config file, %s", err)
+		os.Exit(1)
+	}
+	err = viper.Sub("grpc").Unmarshal(&grpcConf)
+	if err != nil {
+		fmt.Printf("Error unmarshalling config file, %s", err)
+		os.Exit(1)
+	}
+
+	return Config{Logger: loggerConf, Server: serverConf, DBType: dbConf, GRPCConf: grpcConf}
 }

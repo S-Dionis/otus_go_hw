@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/cmd/config"
 	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/app"
 	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/logger"
 	internalhttp "github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/server/http"
@@ -31,7 +32,7 @@ func main() {
 		return
 	}
 
-	config := NewConfig(configFile)
+	config := config.NewConfig(configFile)
 	err := logger.InitLogger(config.Logger.Level)
 	if err != nil {
 		return
@@ -39,14 +40,14 @@ func main() {
 
 	var storage storage.Storage
 
-	switch config.DBType {
+	switch config.DBType.Type {
 	case "memory":
 		storage = memorystorage.New()
 	case "sql":
 		storage = sqlstorage.New()
 	}
 
-	calendar := app.New(storage)
+	calendar := app.New(storage, config)
 
 	server := internalhttp.NewServer(calendar)
 

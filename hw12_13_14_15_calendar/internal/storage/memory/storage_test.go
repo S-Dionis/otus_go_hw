@@ -30,7 +30,7 @@ func TestStorage(t *testing.T) {
 		require.Len(t, list, 1)
 		assert.Equal(t, event, list[0])
 
-		eventChanged := entities.Event{
+		eventChanged := &entities.Event{
 			ID:          event.ID,
 			Title:       "Test title changed",
 			DateTime:    time.Time{},
