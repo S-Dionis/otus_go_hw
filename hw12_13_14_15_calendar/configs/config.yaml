@@ -1,0 +1,12 @@
+logger:
+    level: info
+
+server:
+    host: localhost
+    port: 80
+
+db:
+    memory
+
+grpc:
+    port: 8080
