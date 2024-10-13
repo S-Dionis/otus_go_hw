@@ -3,12 +3,13 @@ package internalhttp
 import (
 	"context"
 	"encoding/json"
-	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/app"
-	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/entities"
-	"github.com/gorilla/mux"
 	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/app"
+	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/entities"
+	"github.com/gorilla/mux"
 )
 
 type Server struct {

@@ -4,16 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/cmd/config"
-	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/app"
-	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/entities"
-	memorystorage "github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/memory"
-	"github.com/stretchr/testify/require"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/cmd/config"
+	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/app"
+	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/entities"
+	memorystorage "github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/memory"
+	"github.com/stretchr/testify/require"
 )
 
 func newServer() *Server {
