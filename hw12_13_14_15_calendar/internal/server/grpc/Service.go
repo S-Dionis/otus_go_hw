@@ -109,7 +109,7 @@ func getEvent(req *pb.EventRequest) (*entities.Event, error) {
 
 func (s *Service) Add(ctx context.Context, req *pb.EventRequest) (*pb.EmptyResponse, error) {
 	requestID := requestIDFromContext(ctx)
-	slog.Info("Request id is " + requestID)
+	slog.Info("Add for request id " + requestID)
 
 	event, err := getEvent(req)
 	if err != nil {
@@ -128,7 +128,7 @@ func (s *Service) Add(ctx context.Context, req *pb.EventRequest) (*pb.EmptyRespo
 
 func (s *Service) Update(ctx context.Context, req *pb.EventRequest) (*pb.EmptyResponse, error) {
 	requestID := requestIDFromContext(ctx)
-	slog.Info("Request id is " + requestID)
+	slog.Info("Update for request id " + requestID)
 
 	event, err := getEvent(req)
 	if err != nil {
@@ -147,7 +147,7 @@ func (s *Service) Update(ctx context.Context, req *pb.EventRequest) (*pb.EmptyRe
 
 func (s *Service) Delete(ctx context.Context, req *pb.EventRequest) (*pb.EmptyResponse, error) {
 	requestID := requestIDFromContext(ctx)
-	slog.Info("Request id is " + requestID)
+	slog.Info("Delete for request id " + requestID)
 
 	event, err := getEvent(req)
 	if err != nil {
@@ -166,7 +166,7 @@ func (s *Service) Delete(ctx context.Context, req *pb.EventRequest) (*pb.EmptyRe
 
 func (s *Service) List(ctx context.Context, le *pb.ListEvents) (*pb.EventsResponse, error) {
 	requestID := requestIDFromContext(ctx)
-	slog.Info("Request id is " + requestID)
+	slog.Info("List for request id " + requestID)
 
 	events, err := s.storage.List()
 	switch le.Period {
