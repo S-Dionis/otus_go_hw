@@ -118,6 +118,7 @@ func (s *Storage) List() ([]entities.Event, error) {
 		var ownerID string
 		var notifyTime int64
 		var notified bool
+
 		if err := result.Scan(&id, &title, &dateTime, &duration, &description, &ownerID, &notifyTime, &notified); err != nil {
 			return nil, err
 		}

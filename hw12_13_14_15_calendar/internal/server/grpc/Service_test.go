@@ -75,6 +75,7 @@ func TestService(t *testing.T) {
 			NotifiedTime: 1000,
 		},
 	}
+
 	_, err = client.Add(ctx, in)
 	require.NoError(t, err)
 	_, err = client.Add(ctx, in)

@@ -47,6 +47,7 @@ func (s *Storage) Change(event *entities.Event) error {
 	e.OwnerID = event.OwnerID
 	e.NotifyTime = event.NotifyTime
 	e.Notified = event.Notified
+
 	return nil
 }
 

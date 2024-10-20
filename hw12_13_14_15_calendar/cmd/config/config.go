@@ -49,16 +49,19 @@ func NewConfig(path string) Config {
 		fmt.Printf("Error unmarshalling config file, %s", err)
 		os.Exit(1)
 	}
+
 	err = viper.Sub("server").Unmarshal(&serverConf)
 	if err != nil {
 		fmt.Printf("Error unmarshalling config file, %s", err)
 		os.Exit(1)
 	}
+
 	err = viper.Sub("db").Unmarshal(&dbConf)
 	if err != nil {
 		fmt.Printf("Error unmarshalling config file, %s", err)
 		os.Exit(1)
 	}
+
 	err = viper.Sub("grpc").Unmarshal(&grpcConf)
 	if err != nil {
 		fmt.Printf("Error unmarshalling config file, %s", err)

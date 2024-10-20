@@ -117,7 +117,6 @@ func getEvent(req *pb.EventRequest) (*entities.Event, error) {
 
 func (s *Service) Add(ctx context.Context, req *pb.EventRequest) (*pb.EmptyResponse, error) {
 	requestID := requestIDFromContext(ctx)
-
 	slog.Info("Add for request id " + requestID)
 
 	event, err := getEvent(req)
