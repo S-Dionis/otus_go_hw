@@ -6,7 +6,7 @@ server:
     port: 80
 
 db:
-    memory
+    type: memory
 
 grpc:
     port: 8080

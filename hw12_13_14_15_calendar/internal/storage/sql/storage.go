@@ -66,11 +66,11 @@ func (s *Storage) Add(event *entities.Event) error {
 
 func (s *Storage) Change(event *entities.Event) error {
 	query := `update events
-				  set title = $1, date_time = $2, duration = $3, description = $4, OwnerID = $5, NotifyTime= $6
-				  where ID = $7`
+				  set title = $1, date_time = $2, duration = $3, description = $4, OwnerID = $5, NotifyTime= $6, Notified = $7
+				  where ID = $8`
 
 	result, err := s.db.ExecContext(s.ctx, query, event.Title, event.DateTime, event.Duration, event.Description,
-		event.OwnerID, event.NotifyTime, event.ID)
+		event.OwnerID, event.NotifyTime, event.Notified, event.ID)
 	if err != nil {
 		return err
 	}
@@ -117,13 +117,15 @@ func (s *Storage) List() ([]entities.Event, error) {
 		var description string
 		var ownerID string
 		var notifyTime int64
-		if err := result.Scan(&id, &title, &dateTime, &duration, &description, &ownerID, &notifyTime); err != nil {
+		var notified bool
+		if err := result.Scan(&id, &title, &dateTime, &duration, &description, &ownerID, &notifyTime, &notified); err != nil {
 			return nil, err
 		}
 
 		event := entities.Event{
 			ID: id, Title: title, DateTime: dateTime, Duration: duration,
 			Description: description, OwnerID: ownerID, NotifyTime: notifyTime,
+			Notified: notified,
 		}
 		events = append(events, event)
 	}

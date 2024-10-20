@@ -10,6 +10,7 @@ type Event struct {
 	Description string
 	OwnerID     string
 	NotifyTime  int64
+	Notified    bool
 }
 
 func GetTodayEvents(events []Event) []Event {

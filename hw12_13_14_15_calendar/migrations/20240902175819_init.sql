@@ -8,22 +8,13 @@ CREATE table Events
     duration    bigint,
     description text,
     owner_id     text,
-    notify_time  bigint
+    notify_time  bigint,
+    notified     boolean default false
 );
-
-CREATE table Notifications
-(
-    id       text primary key,
-    title    text,
-    date     timestamptz not null default now(),
-    "user"     text
-);
-
 
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
 DROP table Events;
-DROP table Notifications;
 -- +goose StatementEnd
