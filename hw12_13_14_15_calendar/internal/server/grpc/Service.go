@@ -57,6 +57,7 @@ func (s *Service) Start() error {
 			slog.Info("Request succeeded: method=%s, request=%v, response=%v, duration=%s",
 				method, request, response, duration)
 		}
+
 		return response, err
 	}))
 
@@ -73,13 +74,16 @@ func (s *Service) Stop() error {
 	if s != nil {
 		s.srv.GracefulStop()
 	}
+
 	return nil
 }
 
 func requestIDFromContext(ctx context.Context) string {
 	requestID := ""
+
 	if ctx != nil {
 		meta, ok := metadata.FromIncomingContext(ctx)
+
 		if ok {
 			ids := meta.Get("request_id")
 			if len(ids) > 0 {
@@ -87,14 +91,17 @@ func requestIDFromContext(ctx context.Context) string {
 			}
 		}
 	}
+
 	return requestID
 }
 
 func getEvent(req *pb.EventRequest) (*entities.Event, error) {
 	reqEvent := req.GetEvent()
+
 	if reqEvent == nil {
 		return nil, errors.New("reqEvent is nil")
 	}
+
 	event := &entities.Event{
 		ID:          reqEvent.Id,
 		Title:       reqEvent.Title,
@@ -104,11 +111,13 @@ func getEvent(req *pb.EventRequest) (*entities.Event, error) {
 		OwnerID:     reqEvent.UserId,
 		NotifyTime:  reqEvent.NotifiedTime,
 	}
+
 	return event, nil
 }
 
 func (s *Service) Add(ctx context.Context, req *pb.EventRequest) (*pb.EmptyResponse, error) {
 	requestID := requestIDFromContext(ctx)
+
 	slog.Info("Add for request id " + requestID)
 
 	event, err := getEvent(req)
@@ -128,6 +137,7 @@ func (s *Service) Add(ctx context.Context, req *pb.EventRequest) (*pb.EmptyRespo
 
 func (s *Service) Update(ctx context.Context, req *pb.EventRequest) (*pb.EmptyResponse, error) {
 	requestID := requestIDFromContext(ctx)
+
 	slog.Info("Update for request id " + requestID)
 
 	event, err := getEvent(req)
@@ -147,6 +157,7 @@ func (s *Service) Update(ctx context.Context, req *pb.EventRequest) (*pb.EmptyRe
 
 func (s *Service) Delete(ctx context.Context, req *pb.EventRequest) (*pb.EmptyResponse, error) {
 	requestID := requestIDFromContext(ctx)
+
 	slog.Info("Delete for request id " + requestID)
 
 	event, err := getEvent(req)
@@ -166,9 +177,11 @@ func (s *Service) Delete(ctx context.Context, req *pb.EventRequest) (*pb.EmptyRe
 
 func (s *Service) List(ctx context.Context, le *pb.ListEvents) (*pb.EventsResponse, error) {
 	requestID := requestIDFromContext(ctx)
+
 	slog.Info("List for request id " + requestID)
 
 	events, err := s.storage.List()
+
 	switch le.Period {
 	case pb.Period_DAY:
 		slog.Info("Get day events")
@@ -187,7 +200,9 @@ func (s *Service) List(ctx context.Context, le *pb.ListEvents) (*pb.EventsRespon
 		slog.Error("Error adding event to storage: %v", err)
 		return nil, err
 	}
+
 	protoEvents := make([]*pb.Event, 0, len(events))
+
 	for _, event := range events {
 		protoEvent := &pb.Event{
 			Id:           event.ID,
@@ -200,5 +215,6 @@ func (s *Service) List(ctx context.Context, le *pb.ListEvents) (*pb.EventsRespon
 		}
 		protoEvents = append(protoEvents, protoEvent)
 	}
+
 	return &pb.EventsResponse{Events: protoEvents}, nil
 }
