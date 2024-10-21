@@ -15,6 +15,7 @@ type Event struct {
 
 func GetTodayEvents(events []Event) []Event {
 	var todayEvents []Event
+
 	now := time.Now()
 	startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	endOfDay := startOfDay.Add(24 * time.Hour)

@@ -51,6 +51,7 @@ func main() {
 		fmt.Println("init logger error:", err)
 		return
 	}
+
 	viper.SetConfigFile(pathToConfig)
 
 	err = viper.ReadInConfig()
@@ -61,6 +62,7 @@ func main() {
 
 	var rabbitConf RabbitConf
 	var db DBType
+
 	err = viper.Sub("rabbit").Unmarshal(&rabbitConf)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error unmarshalling config file, %s", err))

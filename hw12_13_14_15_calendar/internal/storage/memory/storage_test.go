@@ -43,6 +43,7 @@ func TestStorage(t *testing.T) {
 		require.NoError(t, storage.Change(&eventChanged))
 
 		listChanged, err := storage.List()
+
 		require.NoError(t, err)
 		require.Len(t, listChanged, 1)
 		actual := listChanged[0]

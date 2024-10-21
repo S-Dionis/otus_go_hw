@@ -7,6 +7,7 @@ import (
 
 func InitLogger(level string) error {
 	var slogLevel slog.Level
+
 	err := slogLevel.UnmarshalText([]byte(level))
 	if err != nil {
 		return err

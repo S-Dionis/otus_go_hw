@@ -53,6 +53,7 @@ func main() {
 		fmt.Printf("Error unmarshalling config file, %s", err)
 		os.Exit(1)
 	}
+
 	sender := NewSender(rabbitConf)
 	err = sender.Connect()
 	if err != nil {
