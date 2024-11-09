@@ -1,14 +1,10 @@
-package main
+package sender
 
 import (
-	"flag"
 	"fmt"
 	"log/slog"
-	"os"
 
-	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/logger"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"github.com/spf13/viper"
 )
 
 type Sender struct {
@@ -27,59 +23,8 @@ type RabbitConf struct {
 	RoutingKey   string `mapstructure:"routing_key"`
 }
 
-var pathToConfig string
-
-func init() {
-	flag.StringVar(&pathToConfig, "config", "configs/sender_config.yaml", "Path to configuration file")
-}
-
-func main() {
-	err := logger.InitLogger("INFO")
-	if err != nil {
-		fmt.Println("init logger error:", err)
-		return
-	}
-	viper.SetConfigFile(pathToConfig)
-
-	err = viper.ReadInConfig()
-	if err != nil {
-		fmt.Printf("Error reading config file, %s", err)
-		os.Exit(1)
-	}
-
-	var rabbitConf RabbitConf
-	err = viper.Sub("rabbit").Unmarshal(&rabbitConf)
-	if err != nil {
-		fmt.Printf("Error unmarshalling config file, %s", err)
-		os.Exit(1)
-	}
-
-	sender := NewSender(rabbitConf)
-	err = sender.Connect()
-	if err != nil {
-		return
-	}
-
-	messages, err := sender.channel.Consume(
-		rabbitConf.QueueName,
-		"",
-		true,
-		false,
-		false,
-		false,
-		nil,
-	)
-	if err != nil {
-		return
-	}
-
-	go func() {
-		for d := range messages {
-			message := fmt.Sprintf("Received a message: %s", d.Body)
-			slog.Info(message)
-		}
-	}()
-	select {}
+func GetChannel(s *Sender) *amqp.Channel {
+	return s.channel
 }
 
 func NewSender(conf RabbitConf) *Sender {
@@ -105,6 +50,22 @@ func (s *Sender) Connect() error {
 	s.channel = ch
 
 	return nil
+}
+
+func (s *Sender) Consume(queueName string) (<-chan amqp.Delivery, error) {
+	messages, err := s.channel.Consume(
+		queueName,
+		"",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return messages, nil
 }
 
 func (s *Sender) Send(text string) {

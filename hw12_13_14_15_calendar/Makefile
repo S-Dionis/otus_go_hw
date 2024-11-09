@@ -8,8 +8,8 @@ LDFLAGS := -X main.release="develop" -X main.buildDate=$(shell date -u +%Y-%m-%d
 
 build:
 	go build -v -o $(BIN) -ldflags "$(LDFLAGS)" ./cmd/calendar
-	go build -v -o $(BIN_SCHEDULER) -ldflags "$(LDFLAGS)" ./internal/brocker/scheduler
-	go build -v -o $(BIN_SENDER) -ldflags "$(LDFLAGS)" ./internal/brocker/sender
+	go build -v -o $(BIN_SCHEDULER) -ldflags "$(LDFLAGS)" ./cmd/scheduler
+	go build -v -o $(BIN_SENDER) -ldflags "$(LDFLAGS)" ./cmd/sender
 
 run: build
 	$(BIN) -config ./configs/config.yaml

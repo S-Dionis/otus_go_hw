@@ -1,28 +1,16 @@
-package main
+package scheduler
 
 import (
 	"context"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"log/slog"
-	"os"
 	"time"
 
-	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/logger"
 	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage"
 	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/entities"
-	memorystorage "github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/memory"
-	sqlstorage "github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/sql"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"github.com/spf13/viper"
 )
-
-var pathToConfig string
-
-func init() {
-	flag.StringVar(&pathToConfig, "config", "configs/scheduler_config.yaml", "Path to configuration file")
-}
 
 type RabbitConf struct {
 	Host         string `mapstructure:"host"`
@@ -43,67 +31,6 @@ type Scheduler struct {
 	storage *storage.Storage
 	channel *amqp.Channel
 	conn    *amqp.Connection
-}
-
-func main() {
-	err := logger.InitLogger("INFO")
-	if err != nil {
-		fmt.Println("init logger error:", err)
-		return
-	}
-
-	viper.SetConfigFile(pathToConfig)
-
-	err = viper.ReadInConfig()
-	if err != nil {
-		slog.Error(fmt.Sprintf("Error reading config file, %s", err))
-		os.Exit(1)
-	}
-
-	var rabbitConf RabbitConf
-	var db DBType
-
-	err = viper.Sub("rabbit").Unmarshal(&rabbitConf)
-	if err != nil {
-		slog.Error(fmt.Sprintf("Error unmarshalling config file, %s", err))
-		os.Exit(1)
-	}
-
-	err = viper.Sub("db").Unmarshal(&db)
-	if err != nil {
-		slog.Error(fmt.Sprintf("Error unmarshalling config file, %s", err))
-		os.Exit(1)
-	}
-	var database storage.Storage
-
-	switch db.Type {
-	case "memory":
-		database = memorystorage.New()
-	case "sql":
-		database = sqlstorage.New()
-	}
-
-	scheduler := NewScheduler(&rabbitConf, &database)
-	slog.Info("Initializing scheduler...")
-	err = scheduler.Connect()
-	if err != nil {
-		slog.Error(fmt.Sprintf("Error connecting to RabbitMQ, %s", err))
-	}
-
-	ticker := time.NewTicker(10 * time.Second)
-	defer ticker.Stop()
-
-	go func() {
-		for range ticker.C {
-			slog.Info("Checking database for updates")
-			err := scheduler.DatabaseMonitor(context.Background())
-			if err != nil {
-				return
-			}
-		}
-	}()
-
-	select {}
 }
 
 func NewScheduler(conf *RabbitConf, storage *storage.Storage) *Scheduler {
@@ -206,15 +133,35 @@ func (p *Scheduler) produceOne(ctx context.Context, event entities.Event) error 
 	return err
 }
 
-func (p *Scheduler) DatabaseMonitor(ctx context.Context) error {
-	var filtered []entities.Event
+func (p *Scheduler) DeleteItems() error {
 	s := *p.storage
 	events, err := s.List()
-	now := time.Now()
-
 	if err != nil {
 		return err
 	}
+	for _, event := range events {
+		if event.DateTime.Before(time.Now().AddDate(-1, 0, 0)) {
+			event := event
+			err := s.Delete(&event)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (p *Scheduler) DatabaseMonitor(ctx context.Context) error {
+	var filtered []entities.Event
+
+	s := *p.storage
+	events, err := s.List()
+	if err != nil {
+		return err
+	}
+
+	now := time.Now()
+
 	for _, event := range events {
 		if !event.Notified {
 			notifyTime := event.DateTime.Add(-time.Duration(event.NotifyTime) * time.Second)
@@ -224,6 +171,16 @@ func (p *Scheduler) DatabaseMonitor(ctx context.Context) error {
 		}
 	}
 	err = p.produce(ctx, filtered)
+
+	for _, event := range filtered {
+		event.Notified = true
+		event := event
+		err := s.Change(&event)
+		if err != nil {
+			return err
+		}
+	}
+
 	if err != nil {
 		return err
 	}
