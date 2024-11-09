@@ -121,13 +121,13 @@ func (s *Service) Add(ctx context.Context, req *pb.EventRequest) (*pb.EmptyRespo
 
 	event, err := getEvent(req)
 	if err != nil {
-		slog.Error("error extracting event", err)
+		slog.Error(fmt.Sprintf("error extracting event %v", err))
 		return nil, status.Error(codes.InvalidArgument, "request event is required")
 	}
 
 	err = s.storage.Add(event)
 	if err != nil {
-		slog.Error("Error adding event to storage: %v", err)
+		slog.Error(fmt.Sprintf("Error adding event to storage: %v", err))
 		return nil, err
 	}
 
@@ -141,13 +141,13 @@ func (s *Service) Update(ctx context.Context, req *pb.EventRequest) (*pb.EmptyRe
 
 	event, err := getEvent(req)
 	if err != nil {
-		slog.Error("error extracting event", err)
+		slog.Error(fmt.Sprintf("error extracting event %v", err))
 		return nil, status.Error(codes.InvalidArgument, "request event is required")
 	}
 
 	err = s.storage.Change(event)
 	if err != nil {
-		slog.Error("Error adding event to storage: %v", err)
+		slog.Error(fmt.Sprintf("Error adding event to storage: %v", err))
 		return nil, err
 	}
 
@@ -161,13 +161,13 @@ func (s *Service) Delete(ctx context.Context, req *pb.EventRequest) (*pb.EmptyRe
 
 	event, err := getEvent(req)
 	if err != nil {
-		slog.Error("error extracting event", err)
+		slog.Error(fmt.Sprintf("error extracting event %v", err))
 		return nil, status.Error(codes.InvalidArgument, "request event is required")
 	}
 
 	err = s.storage.Delete(event)
 	if err != nil {
-		slog.Error("Error adding event to storage: %v", err)
+		slog.Error(fmt.Sprintf("Error adding event to storage: %v", err))
 		return nil, err
 	}
 
@@ -196,7 +196,7 @@ func (s *Service) List(ctx context.Context, le *pb.ListEvents) (*pb.EventsRespon
 	}
 
 	if err != nil {
-		slog.Error("Error adding event to storage: %v", err)
+		slog.Error(fmt.Sprintf("Error adding event to storage: %v", err))
 		return nil, err
 	}
 

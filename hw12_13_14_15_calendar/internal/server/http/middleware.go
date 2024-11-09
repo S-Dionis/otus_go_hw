@@ -13,7 +13,7 @@ var logger *slog.Logger
 func init() {
 	file, err := os.OpenFile("method.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o666)
 	if err != nil {
-		slog.Error("Не удалось открыть файл для логирования: %v", err)
+		slog.Error(fmt.Sprintf("Не удалось открыть файл для логирования: %v", err))
 	}
 
 	handlerOpts := &slog.HandlerOptions{

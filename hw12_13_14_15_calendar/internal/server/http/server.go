@@ -3,6 +3,7 @@ package internalhttp
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
@@ -39,7 +40,7 @@ func (s *Server) Start(ctx context.Context) error {
 		<-ctx.Done()
 		if err := s.server.Shutdown(context.Background()); err != nil {
 			slog.Info("server" + time.Now().Format(time.RFC3339) + "Shutdown")
-			slog.Error("Server Shutdown Error:", err)
+			slog.Error(fmt.Sprintf("Server Shutdown Error: %v", err))
 		}
 	}()
 
