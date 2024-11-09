@@ -1,0 +1,11 @@
+rabbit:
+  host: localhost
+  port: 5672
+  user: guest
+  password: guest
+  exchange_name: mur
+  queue_name: meow
+  routing_key: mewuk
+
+db:
+  type: memory
