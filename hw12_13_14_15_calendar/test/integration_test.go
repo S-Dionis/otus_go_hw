@@ -6,18 +6,20 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/entities"
-	_ "github.com/lib/pq"
-	"github.com/stretchr/testify/require"
-	"log"
 	"log/slog"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/entities"
+	_ "github.com/lib/pq"
+	"github.com/stretchr/testify/require"
 )
 
-const serverURL = "http://calendar:8888"
-const dbConnStr = "host=postgres port=5432 user=user password=password dbname=calendar sslmode=disable"
+const (
+	serverURL = "http://calendar:8888"
+	dbConnStr = "host=postgres port=5432 user=user password=password dbname=calendar sslmode=disable"
+)
 
 func resetSubSeconds(t time.Time) time.Time {
 	return time.Date(
@@ -57,17 +59,13 @@ func TestIntegration(t *testing.T) {
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, addEventURL, bytes.NewBuffer(postBody))
-	if err != nil {
-		log.Fatalf("failed to create request: %v", err)
-	}
+	require.NoError(t, err)
 
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	if err != nil {
-		log.Fatalf("failed to execute request: %v", err)
-	}
+	require.NoError(t, err)
 	defer resp.Body.Close()
 
 	require.NoError(t, err)

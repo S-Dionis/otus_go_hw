@@ -11,7 +11,7 @@ import (
 
 	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/cmd/config"
 	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/entities"
-	_ "github.com/lib/pq" //postgres driver
+	_ "github.com/lib/pq" // postgres driver
 	"github.com/pressly/goose/v3"
 )
 
@@ -38,9 +38,6 @@ func New(ctx context.Context, conf config.PsqlConf) *Storage {
 	db.SetConnMaxLifetime(0)
 	db.SetMaxOpenConns(4)
 	db.SetMaxIdleConns(4)
-	if err != nil {
-		log.Fatalf("Ошибка подключения к базе данных: %v", err)
-	}
 
 	slog.Info(fmt.Sprintf("Run migration with file %s", conf.Migration))
 	if err := goose.Up(db, conf.Migration); err != nil {

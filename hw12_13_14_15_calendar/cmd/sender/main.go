@@ -4,17 +4,17 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/cmd/config"
-	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/brocker/scheduler"
-	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage"
-	memorystorage "github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/memory"
-	sqlstorage "github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/sql"
 	"log/slog"
 	"os"
 	"time"
 
+	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/cmd/config"
+	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/brocker/scheduler"
 	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/brocker/sender"
 	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/logger"
+	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage"
+	memorystorage "github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/memory"
+	sqlstorage "github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage/sql"
 	"github.com/spf13/viper"
 )
 
