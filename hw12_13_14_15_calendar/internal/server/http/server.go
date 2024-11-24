@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"time"
@@ -25,8 +26,9 @@ func NewServer(app *app.App) *Server {
 	}
 	serverMux.HandleFunc("/hello", s.helloHandler)
 	serverMux.HandleFunc("/events", s.eventsHandler)
+
 	server := &http.Server{
-		Addr:              ":8080",
+		Addr:              app.Config().Server.Host + ":" + app.Config().Server.Port,
 		Handler:           loggingMiddleware(serverMux),
 		ReadHeaderTimeout: 2 * time.Second,
 	}
@@ -44,7 +46,7 @@ func (s *Server) Start(ctx context.Context) error {
 		}
 	}()
 
-	slog.Info("server" + time.Now().Format(time.RFC3339) + "Start")
+	slog.Info("server " + time.Now().Format(time.RFC3339) + " started at: " + s.server.Addr)
 	return s.server.ListenAndServe()
 }
 
@@ -119,12 +121,24 @@ func (s *Server) updateEventsHandler(w http.ResponseWriter, req *http.Request) {
 func (s *Server) addEventsHandler(w http.ResponseWriter, req *http.Request) {
 	event, err := getEvent(req)
 	if err != nil {
+		b, err := io.ReadAll(req.Body)
+
+		if err != nil {
+			slog.Error(err.Error())
+		} else {
+			slog.Error(fmt.Sprintf("Error getting event: %v with body: %s", err, b))
+		}
+
+		slog.Error(fmt.Sprintf("Error getting event: %v", err))
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	slog.Info(fmt.Sprintf("Event to add: %v", event))
+
 	err = s.app.Storage().Add(event)
 	if err != nil {
+		slog.Error(fmt.Sprintf("Error adding event: %v with body: %s", err, req.Body))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

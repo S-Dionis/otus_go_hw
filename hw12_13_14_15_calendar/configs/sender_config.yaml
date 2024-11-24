@@ -6,3 +6,6 @@ rabbit:
   exchange_name: mur
   queue_name: meow
   routing_key: mewuk
+
+db:
+  type: memory

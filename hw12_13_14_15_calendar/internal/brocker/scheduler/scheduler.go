@@ -23,7 +23,7 @@ type RabbitConf struct {
 }
 
 type DBType struct {
-	Type string `mapstructure:"db"`
+	Type string `mapstructure:"type"`
 }
 
 type Scheduler struct {
@@ -137,6 +137,7 @@ func (p *Scheduler) DeleteItems() error {
 	s := *p.storage
 	events, err := s.List()
 	if err != nil {
+		slog.Error(fmt.Sprintf("Error get list of events: %s", err))
 		return err
 	}
 	for _, event := range events {
@@ -144,6 +145,7 @@ func (p *Scheduler) DeleteItems() error {
 			event := event
 			err := s.Delete(&event)
 			if err != nil {
+				slog.Error(fmt.Sprintf("Error delete event: %s", err))
 				return err
 			}
 		}
@@ -171,16 +173,6 @@ func (p *Scheduler) DatabaseMonitor(ctx context.Context) error {
 		}
 	}
 	err = p.produce(ctx, filtered)
-
-	for _, event := range filtered {
-		event.Notified = true
-		event := event
-		err := s.Change(&event)
-		if err != nil {
-			return err
-		}
-	}
-
 	if err != nil {
 		return err
 	}

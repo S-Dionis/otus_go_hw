@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -21,6 +22,7 @@ import (
 var configFile string
 
 func init() {
+	fmt.Println("Initializing calendar service")
 	flag.StringVar(&configFile, "config", "configs/config.yaml", "Path to configuration file")
 }
 
@@ -44,7 +46,7 @@ func main() {
 	case "memory":
 		storage = memorystorage.New()
 	case "sql":
-		storage = sqlstorage.New()
+		storage = sqlstorage.New(context.Background(), config.PsqlConf)
 	}
 
 	calendar := app.New(storage, config)

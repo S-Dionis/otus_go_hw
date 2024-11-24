@@ -1,1 +1,79 @@
 version: "3"
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: calendar
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+    healthcheck:
+      test: [ "CMD-SHELL", "rabbitmqctl status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  calendar:
+    build:
+      context: ..
+      dockerfile: build/Dockerfile
+    container_name: calendar
+    ports:
+      - "8888:8888"
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  sender:
+    build:
+      context: ..
+      dockerfile: build/sender/Dockerfile
+    container_name: sender
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  scheduler:
+    build:
+      context: ..
+      dockerfile: build/scheduler/Dockerfile
+    container_name: scheduler
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  test:
+    build:
+      context: ..
+      dockerfile: build/test/Dockerfile
+    container_name: test
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+

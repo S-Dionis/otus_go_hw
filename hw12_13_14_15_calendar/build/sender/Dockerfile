@@ -1,8 +1,7 @@
-# Собираем в гошке
 FROM golang:1.22 as build
 
-ENV BIN_FILE /opt/calendar/calendar-app
-ENV CODE_DIR /go/src/calendar
+ENV BIN_FILE /opt/sender/sender-app
+ENV CODE_DIR /go/src/sender
 
 WORKDIR ${CODE_DIR}
 
@@ -18,21 +17,21 @@ COPY . ${CODE_DIR}
 ARG LDFLAGS
 RUN CGO_ENABLED=0 go build \
         -ldflags "$LDFLAGS" \
-        -o ${BIN_FILE} cmd/calendar/*
+        -o ${BIN_FILE} cmd/sender/*
 
 # На выходе тонкий образ
 FROM alpine:3.9
 
 LABEL ORGANIZATION="OTUS Online Education"
-LABEL SERVICE="calendar"
+LABEL SERVICE="sender"
 LABEL MAINTAINERS="student@otus.ru"
 
-ENV BIN_FILE "/opt/calendar/calendar-app"
+ENV BIN_FILE "/opt/sender/sender-app"
 COPY --from=build ${BIN_FILE} ${BIN_FILE}
 
-ENV CONFIG_FILE /etc/calendar/config.yaml
-ENV MIGRATION_FILE /etc/calendar/20240902175819_init.sql
-COPY ./configs/deploy/config.yaml ${CONFIG_FILE}
+ENV CONFIG_FILE /etc/sender/sender_config.yaml
+ENV MIGRATION_FILE /etc/sender/20240902175819_init.sql
+COPY ./configs/deploy/sender_config.yaml ${CONFIG_FILE}
 COPY ./migrations/20240902175819_init.sql ${MIGRATION_FILE}
 
 CMD ${BIN_FILE} -config ${CONFIG_FILE}

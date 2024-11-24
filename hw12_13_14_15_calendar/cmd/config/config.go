@@ -12,6 +12,7 @@ type Config struct {
 	Server   ServerConf
 	DBType   DBType
 	GRPCConf GRPCConf
+	PsqlConf PsqlConf
 }
 
 type LoggerConf struct {
@@ -23,11 +24,20 @@ type ServerConf struct {
 }
 
 type DBType struct {
-	Type string `mapstructure:"db"`
+	Type string `mapstructure:"type"`
 }
 
 type GRPCConf struct {
 	Port string `mapstructure:"port"`
+}
+
+type PsqlConf struct {
+	Host      string `mapstructure:"host"`
+	Port      int64  `mapstructure:"port"`
+	User      string `mapstructure:"user"`
+	Password  string `mapstructure:"password"`
+	Dbname    string `mapstructure:"dbname"`
+	Migration string `mapstructure:"migration"`
 }
 
 func NewConfig(path string) Config {
@@ -43,6 +53,7 @@ func NewConfig(path string) Config {
 	var serverConf ServerConf
 	var grpcConf GRPCConf
 	var dbConf DBType
+	var psqlConf PsqlConf
 
 	err = viper.Sub("logger").Unmarshal(&loggerConf)
 	if err != nil {
@@ -62,11 +73,19 @@ func NewConfig(path string) Config {
 		os.Exit(1)
 	}
 
+	if dbConf.Type == "sql" {
+		err = viper.Sub("postgres").Unmarshal(&psqlConf)
+		if err != nil {
+			fmt.Printf("Error unmarshalling config file, %s", err)
+			os.Exit(1)
+		}
+	}
+
 	err = viper.Sub("grpc").Unmarshal(&grpcConf)
 	if err != nil {
 		fmt.Printf("Error unmarshalling config file, %s", err)
 		os.Exit(1)
 	}
 
-	return Config{Logger: loggerConf, Server: serverConf, DBType: dbConf, GRPCConf: grpcConf}
+	return Config{Logger: loggerConf, Server: serverConf, DBType: dbConf, GRPCConf: grpcConf, PsqlConf: psqlConf}
 }

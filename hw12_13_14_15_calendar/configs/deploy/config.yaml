@@ -1,0 +1,20 @@
+logger:
+    level: info
+
+server:
+    host: calendar
+    port: 8888
+
+db:
+    type: sql
+
+postgres:
+    host: postgres
+    port: 5432
+    user: user
+    password: password
+    dbname: calendar
+    migration: /etc/calendar/
+
+grpc:
+    port: 8080

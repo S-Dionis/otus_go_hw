@@ -38,4 +38,23 @@ lint: install-lint-deps
 generate:
 	protoc --proto_path=api/calendar/ --go_out=pb --go-grpc_out=pb api/*.proto
 
+up:
+	docker compose -f ./deployments/docker-compose.yaml up -d
+
+down:
+	docker compose down
+
+integration-tests: up run-tests down
+
+run-tests:
+	docker exec -it test go test /go/src/test/test -v
+	@if [ $$? -eq 0 ]; then \
+		echo "Integration tests passed."; \
+		exit 0; \
+	else \
+		echo "Integration tests failed."; \
+		exit 1; \
+	fi
+
 .PHONY: build run build-img run-img version test lint
+

@@ -1,5 +1,5 @@
 rabbit:
-  host: localhost
+  host: rabbitmq
   port: 5672
   user: guest
   password: guest
@@ -11,10 +11,9 @@ db:
   type: sql
 
 postgres:
-  host: localhost
+  host: postgres
   port: 5432
   user: user
   password: password
   dbname: calendar
-  migration: ./migrations
-
+  migration: /etc/sender/
