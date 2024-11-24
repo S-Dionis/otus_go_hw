@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/cmd/config"
-
 	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/brocker/scheduler"
 	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/logger"
 	"github.com/S-Dionis/otus_go_hw/hw12_13_14_15_calendar/internal/storage"
