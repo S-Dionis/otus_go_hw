@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}-scheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}-scheduler
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}-scheduler
+    spec:
+      containers:
+        - name: scheduler
+          image: scheduler:local

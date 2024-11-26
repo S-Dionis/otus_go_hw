@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{ .Values.appName }}-postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}-postgres
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}-postgres
+    spec:
+      containers:
+          - name: postgres
+            image: postgres:latest
+            ports:
+              - containerPort: {{ .Values.postgres.port }}
+            env:
+              - name: POSTGRES_USER
+                value: {{ .Values.postgres.user }}
+              - name: POSTGRES_PASSWORD
+                value: {{ .Values.postgres.password }}
+              - name: POSTGRES_DB
+                value: {{ .Values.postgres.db }}
+            volumeMounts:
+              - name: {{ .Values.postgres.volume }}
+                mountPath: {{ .Values.postgres.mountPath }}
+            readinessProbe:
+              exec:
+                command: ["pg_isready"]
+              initialDelaySeconds: 10
+              periodSeconds: 10
+      volumes:
+        - name: {{ .Values.postgres.volume }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.appName }}-postgres-pvc
