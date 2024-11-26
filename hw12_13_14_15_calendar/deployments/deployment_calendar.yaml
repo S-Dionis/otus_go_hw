@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+    spec:
+      containers:
+        - name: calendar
+          image: calendar:local
+          ports:
+            - containerPort: 8888
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              port: 8888
+              path: /hello
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 5
+          livenessProbe:
+            httpGet:
+              port: 8888
+              path: /hello
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 5

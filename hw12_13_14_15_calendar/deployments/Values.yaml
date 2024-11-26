@@ -1,0 +1,21 @@
+appName: calendar
+appIngressName: calendar-ingress
+schedulerName: scheduler
+senderName: sender
+
+postgres:
+  user: user
+  password: password
+  db: calendar
+  volume: pgdata
+  mountPath: /var/lib/postgresql/data
+  path: /data/postgres
+
+rabbitMQ:
+  port: 5672
+  web: 15672
+  user: "guest"
+  password: "guest"
+  volumeName: rabbitmq-storage
+  volumePath: /var/lib/rabbitmq
+  path: /data/rabbitmq

@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}-sender
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}-sender
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}-sender
+    spec:
+      containers:
+        - name: sender
+          image: sender:local
